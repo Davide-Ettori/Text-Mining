@@ -111,6 +111,12 @@ def MScandidate_gen(F_k, SDC, supports):
                         C_k.pop(c)     
     return C_k    
 
+def find_itemset(itemset, F_k):
+    for i, f in enumerate(F_k):
+        if f.to_set() == itemset:
+            return i
+    return -1
+
 def MSApriori(T, MIS, SDC, M):
     L, supports = init_pass(M, T) # returns both the L list and the supports for each singular item
     k = 1
@@ -126,7 +132,8 @@ def MSApriori(T, MIS, SDC, M):
                 if contains(c.to_set(), t):
                     c.count += 1
                 if contains(c.to_set().remove(c.items[0]), t):
-                    (c - c[1]).count += 1
+                    index = find_itemset(c.to_set().remove(c.items[0]), F_k[-1])
+                    F_k[-1][index].count += 1
         F_k.append([c for c in C_k if c.count/len(T) >= MIS[c.items[0]]])
         if not F_k[-1]:
             break
