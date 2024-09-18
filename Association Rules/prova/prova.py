@@ -71,14 +71,11 @@ class Itemset():
     
     def join(self, other_item): # return a new Itemset that is the join of the two  
         return Itemset(self.items + [other_item.items[-1]])
-    
-    def to_set(self): # return itemset as a set
-        return self.items_set
 
 def get_subsets(s):
     subsets = list()
     for i in range(len(s)):
-        subsets.append(set(s[:i] + s[i+1:]))
+        subsets.append(set(s[:i] + s[i + 1:]))
     return subsets
 
 def lvl2_candidate_gen(L, SDC, MIS, supports):
@@ -93,27 +90,28 @@ def lvl2_candidate_gen(L, SDC, MIS, supports):
 
 def prune_candidates(s, F_k):
     for f in F_k:
-        if f.to_set().issubset(s):
+        if f.items_set.issubset(s):
             return False
     return True
 
-def MScandidate_gen(F_k, SDC, supports):
+def MScandidate_gen(F_k, SDC, MIS, supports):
     C_k = []
     for f1 in F_k:
         for f2 in F_k:
             if f1.can_join(f2, SDC, supports):
                 c = f1.join(f2)
                 C_k.append(c)
-            subsets = get_subsets(c.items)
-            for s in subsets:
-                if s.contains(c.items[0]) or MIS[c.items[0]] == MIS[c.items[1]]:
-                    if prune_candidates(s, F_k):
-                        C_k.pop(c)     
+                subsets = get_subsets(c.items)
+                for s in subsets:
+                    if s.contains(c.items[0]) or MIS[c.items[0]] == MIS[c.items[1]]:
+                        if prune_candidates(s, F_k):
+                            C_k.pop(c)   
+                            break  
     return C_k    
 
 def find_itemset(itemset, F_k):
     for i, f in enumerate(F_k):
-        if f.to_set() == itemset:
+        if f.items_set == itemset:
             return i
     return -1
 
@@ -126,13 +124,13 @@ def MSApriori(T, MIS, SDC, M):
         if k == 2:
             C_k = lvl2_candidate_gen(L, SDC, MIS, supports)
         else:
-            C_k = MScandidate_gen(F_k[-1], SDC, supports)
+            C_k = MScandidate_gen(F_k[-1], SDC, MIS, supports)
         for t in T:
             for c in C_k:
-                if contains(c.to_set(), t):
+                if contains(c.items_set, t):
                     c.count += 1
-                if contains(c.to_set().remove(c.items[0]), t):
-                    index = find_itemset(c.to_set().remove(c.items[0]), F_k[-1])
+                if contains(c.items_set.remove(c.items[0]), t):
+                    index = find_itemset(c.items_set.remove(c.items[0]), F_k[-1])
                     F_k[-1][index].count += 1
         F_k.append([c for c in C_k if c.count/len(T) >= MIS[c.items[0]]])
         if not F_k[-1]:
@@ -143,7 +141,7 @@ def MSApriori(T, MIS, SDC, M):
 
 
 def contains(a, b):
-    return b.issubset(a)
+    return a.issubset(b)
 
 if __name__ == "__main__":
     data_file_path = 'data.txt'
