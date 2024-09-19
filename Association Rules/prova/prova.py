@@ -29,6 +29,19 @@ def read_data(data_file_path, parameters_file_path):
     M.sort(key=lambda x: x[1])
     return T, MIS, SDC, [x[0] for x in M]
 
+def write_output(output_file_path, F_k):
+    with open(output_file_path, 'x') as output_file:
+        for idx, list_itemset in enumerate(F_k, start=1):
+            output_file.write(f"(Length-{idx} {len(list_itemset)})\n")
+
+            for itemset in list_itemset:
+                itemset_str = " ".join(str(item) for item in itemset.items)
+                #output_file.write(f"    ({itemset_str}) : {itemset.freq_count} : {itemset.tail_count}\n")
+                output_file.write(f"    ({itemset_str}) : {itemset.count}\n")
+        output_file.write(")\n")
+
+    return
+
 def init_pass(M, T):
     supports = dict()
     
@@ -153,17 +166,19 @@ def MSApriori(T, MIS, SDC, M):
     F_k.pop()
     return F_k
 
-
 def contains(a, b):
     return a.issubset(b)
 
 if __name__ == "__main__":
     data_file_path = 'data.txt'
     parameters_file_path = 'parameters.txt'
+    output_file_path = 'out.txt'
     T, MIS, SDC, M = read_data(data_file_path, parameters_file_path)
 
     print(T)
     print(MIS)
     print(SDC)
     print(M)
-    F_K = MSApriori(T, MIS, SDC, M)
+    F_k = MSApriori(T, MIS, SDC, M)
+
+    write_output(output_file_path, F_k)
