@@ -82,7 +82,8 @@ def get_MIS(item, MIS):
 class Itemset():
     def __init__(self, items):
         self.items = items # must be sorted by MIS value
-        self.count = 0
+        self.freq_count = 0
+        self.tail_count = 0
         
     def can_join(self, other_item, phi, supports): # return True iff the items can be joined
         return self.items[:-1] == other_item.items[:-1] and \
@@ -144,8 +145,9 @@ def MSApriori(T, MIS, SDC, M):
     F_k = list() 
     F_k.append([Itemset([item]) for item in L if supports[item] >= get_MIS(item, MIS)])
 
+    # check freq vs tail count for F_1 itemsets
     for i in range(len(F_k[-1])): # adding the count attribute also for F_1 itemsets. From F_2 on is already done in the loop
-        F_k[-1][i].count = round(supports[F_k[-1][i].items[0]] * len(T))
+        F_k[-1][i].freq_count = round(supports[F_k[-1][i].items[0]] * len(T))
         
     while (True):
         if k == 2:
@@ -155,11 +157,11 @@ def MSApriori(T, MIS, SDC, M):
         for t in T:
             for c in C_k:
                 if contains(c.to_set(), t):
-                    c.count += 1
+                    c.freq_count += 1
                 if contains(c.to_set().remove(c.items[0]), t):
                     index = find_itemset(c.to_set().remove(c.items[0]), F_k[-1])
-                    F_k[-1][index].count += 1
-        F_k.append([c for c in C_k if c.count/len(T) >= get_MIS(c.items[0], MIS)])
+                    F_k[-1][index].tail_count += 1
+        F_k.append([c for c in C_k if c.freq_count/len(T) >= get_MIS(c.items[0], MIS)])
         if not F_k[-1]:
             break
         k += 1
