@@ -61,7 +61,6 @@ def init_pass(M, T):
 class Itemset():
     def __init__(self, items):
         self.items = items # must be sorted by MIS value
-        self.items_set = set(items) # should be useful (faster) to count the supports afeterwards
         self.count = 0
         
     def can_join(self, other_item, phi, supports): # return True iff the items can be joined
@@ -71,6 +70,9 @@ class Itemset():
     
     def join(self, other_item): # return a new Itemset that is the join of the two  
         return Itemset(self.items + [other_item.items[-1]])
+    
+    def to_set(self):
+        return set(self.items)
 
 def get_subsets(s):
     subsets = list()
@@ -90,7 +92,7 @@ def lvl2_candidate_gen(L, SDC, MIS, supports):
 
 def prune_candidates(s, F_k):
     for f in F_k:
-        if f.items_set.issubset(s):
+        if f.to_set() == s:
             return False
     return True
 
@@ -111,7 +113,7 @@ def MScandidate_gen(F_k, SDC, MIS, supports):
 
 def find_itemset(itemset, F_k):
     for i, f in enumerate(F_k):
-        if f.items_set == itemset:
+        if f.to_set() == itemset:
             return i
     return -1
 
@@ -127,10 +129,10 @@ def MSApriori(T, MIS, SDC, M):
             C_k = MScandidate_gen(F_k[-1], SDC, MIS, supports)
         for t in T:
             for c in C_k:
-                if contains(c.items_set, t):
+                if contains(c.to_set(), t):
                     c.count += 1
-                if contains(c.items_set.remove(c.items[0]), t):
-                    index = find_itemset(c.items_set.remove(c.items[0]), F_k[-1])
+                if contains(c.to_set().remove(c.items[0]), t):
+                    index = find_itemset(c.to_set().remove(c.items[0]), F_k[-1])
                     F_k[-1][index].count += 1
         F_k.append([c for c in C_k if c.count/len(T) >= MIS[c.items[0]]])
         if not F_k[-1]:
