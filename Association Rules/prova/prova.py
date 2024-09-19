@@ -166,4 +166,4 @@ if __name__ == "__main__":
     print(MIS)
     print(SDC)
     print(M)
-    MSApriori(T, MIS, SDC, M)
+    F_K = MSApriori(T, MIS, SDC, M)
