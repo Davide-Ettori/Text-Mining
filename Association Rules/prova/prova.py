@@ -1,12 +1,7 @@
 def read_data(data_file_path, parameters_file_path):
     T = list()
     MIS = dict()
-    M = list()
-    with open(data_file_path, 'r') as data_file:
-        data_lines = data_file.readlines()
-        for line in data_lines:
-            temp = line.strip().split(',')
-            T.append(set([int(x) for x in temp]))
+    M = set()
 
     with open(parameters_file_path, 'r') as parameters_file:
         parameter_lines = parameters_file.readlines()
@@ -19,10 +14,18 @@ def read_data(data_file_path, parameters_file_path):
             else:
                 start = l.find('(') + 1
                 end = l.find(')')
-                item = l[start:end]
-                MIS[int(item)] = float(l.split(' ')[-1])
-                M.append((int(item), MIS[item]))
+                item = int(l[start:end])
+                MIS[item] = float(l.split(' ')[-1])
     
+    with open(data_file_path, 'r') as data_file:
+        data_lines = data_file.readlines()
+        for line in data_lines:
+            temp = [int(x) for x in line.strip().split(',')]
+            T.append(set(temp))
+            for item in temp:
+                M.add((item, get_MIS(item, MIS)))
+
+    M = list(M)
     M.sort(key=lambda x: x[1])
     return T, MIS, SDC, [x[0] for x in M]
 
@@ -42,7 +45,7 @@ def init_pass(M, T):
 
     first_index = -1
     for i, item in enumerate(M): # find the first item that satisfies the MIS
-        if supports[item] >= MIS[item]:
+        if supports[item] >= get_MIS(item, MIS):
             first_index = i
             L.append(item)
             base_support = supports[item] # the support that will be used for inserting the following items in L
@@ -50,13 +53,18 @@ def init_pass(M, T):
     
     if first_index == -1: # if no item satisfies the MIS, terminate
         print("No Item satisfies the MIS")
-        return None
+        return None, None
     
     for i in range(first_index + 1, len(M)): # insert the remaining items in L
         if supports[M[i]] >= base_support:
             L.append(M[i])
     
     return L, supports
+
+def get_MIS(item, MIS):
+    if item in MIS:
+        return MIS[item]
+    return MIS["rest"]
 
 class Itemset():
     def __init__(self, items):
@@ -84,9 +92,9 @@ def lvl2_candidate_gen(L, SDC, MIS, supports):
     C2 = list()
 
     for i, l in enumerate(L):
-        if supports[l] >= MIS[l]:
+        if supports[l] >= get_MIS:
             for h in L[i + 1:]:
-                if supports[h] >= MIS[l] and abs(supports[h] - supports[l]) <= SDC:
+                if supports[h] >= get_MIS(l, MIS) and abs(supports[h] - supports[l]) <= SDC:
                     C2.append(Itemset([l, h]))
     return C2
 
@@ -105,7 +113,7 @@ def MScandidate_gen(F_k, SDC, MIS, supports):
                 C_k.append(c)
                 subsets = get_subsets(c.items)
                 for s in subsets:
-                    if s.contains(c.items[0]) or MIS[c.items[0]] == MIS[c.items[1]]:
+                    if s.contains(c.items[0]) or get_MIS(c.items[0], MIS) == get_MIS(c.items[1], MIS):
                         if prune_candidates(s, F_k):
                             C_k.pop(c)   
                             break  
@@ -121,7 +129,11 @@ def MSApriori(T, MIS, SDC, M):
     L, supports = init_pass(M, T) # returns both the L list and the supports for each singular item
     k = 1
     F_k = list() 
-    F_k.append([Itemset([item]) for item in L if supports[item] >= MIS[item]])
+    F_k.append([Itemset([item]) for item in L if supports[item] >= get_MIS(item, MIS)])
+
+    for i in range(len(F_k[-1])): # adding the count attribute also for F_1 itemsets. From F_2 on is already done in the loop
+        F_k[-1][i].count = round(supports[F_k[-1][i].items[0]] * len(T))
+        
     while (True):
         if k == 2:
             C_k = lvl2_candidate_gen(L, SDC, MIS, supports)
@@ -134,7 +146,7 @@ def MSApriori(T, MIS, SDC, M):
                 if contains(c.to_set().remove(c.items[0]), t):
                     index = find_itemset(c.to_set().remove(c.items[0]), F_k[-1])
                     F_k[-1][index].count += 1
-        F_k.append([c for c in C_k if c.count/len(T) >= MIS[c.items[0]]])
+        F_k.append([c for c in C_k if c.count/len(T) >= get_MIS(c.items[0], MIS)])
         if not F_k[-1]:
             break
         k += 1
