@@ -36,8 +36,8 @@ def write_output(output_file_path, F_k):
 
             for itemset in list_itemset:
                 itemset_str = " ".join(str(item) for item in itemset.items)
-                #output_file.write(f"    ({itemset_str}) : {itemset.freq_count} : {itemset.tail_count}\n")
-                output_file.write(f"    ({itemset_str}) : {itemset.count}\n")
+                output_file.write(f"    ({itemset_str}) : {itemset.freq_count} : {itemset.tail_count}\n")
+                #output_file.write(f"    ({itemset_str}) : {itemset.count}\n")
         output_file.write(")\n")
 
     return
@@ -82,6 +82,7 @@ def get_MIS(item, MIS):
 class Itemset():
     def __init__(self, items):
         self.items = items # must be sorted by MIS value
+        self.items_set = set(items)
         self.freq_count = 0
         self.tail_count = 0
         
@@ -94,7 +95,7 @@ class Itemset():
         return Itemset(self.items + [other_item.items[-1]])
     
     def to_set(self):
-        return set(self.items)
+        return self.items_set
 
 def get_subsets(s):
     subsets = list()
@@ -156,10 +157,12 @@ def MSApriori(T, MIS, SDC, M):
             C_k = MScandidate_gen(F_k[-1], SDC, MIS, supports)
         for t in T:
             for c in C_k:
-                if contains(c.to_set(), t):
+                temp_set = c.to_set()
+                if contains(temp_set, t):
                     c.freq_count += 1
-                if contains(c.to_set().remove(c.items[0]), t):
-                    index = find_itemset(c.to_set().remove(c.items[0]), F_k[-1])
+                temp_set.remove(c.items[0])
+                if contains(temp_set, t):
+                    index = find_itemset(temp_set, F_k[-1])
                     F_k[-1][index].tail_count += 1
         F_k.append([c for c in C_k if c.freq_count/len(T) >= get_MIS(c.items[0], MIS)])
         if not F_k[-1]:
