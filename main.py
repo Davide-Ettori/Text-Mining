@@ -30,15 +30,15 @@ def read_data(data_file_path, parameters_file_path):
     return T, MIS, SDC, [x[0] for x in M]
 
 def write_output(output_file_path, F_k):
-    with open(output_file_path, 'x') as output_file:
+    with open(output_file_path, 'w') as output_file:
         for idx, list_itemset in enumerate(F_k, start=1):
-            output_file.write(f"(Length-{idx} {len(list_itemset)})\n")
+            output_file.write(f"(Length-{idx} {len(list_itemset)}\n")
 
             for itemset in list_itemset:
                 itemset_str = " ".join(str(item) for item in itemset.items)
                 output_file.write(f"    ({itemset_str}) : {itemset.freq_count} : {itemset.tail_count}\n")
                 #output_file.write(f"    ({itemset_str}) : {itemset.count}\n")
-        output_file.write(")\n")
+            output_file.write(")\n")
 
     return
 
@@ -107,7 +107,7 @@ def lvl2_candidate_gen(L, SDC, MIS, supports):
     C2 = list()
 
     for i, l in enumerate(L):
-        if supports[l] >= get_MIS:
+        if supports[l] >= get_MIS(l, MIS):
             for h in L[i + 1:]:
                 if supports[h] >= get_MIS(l, MIS) and abs(supports[h] - supports[l]) <= SDC:
                     C2.append(Itemset([l, h]))
@@ -128,9 +128,9 @@ def MScandidate_gen(F_k, SDC, MIS, supports):
                 C_k.append(c)
                 subsets = get_subsets(c.items)
                 for s in subsets:
-                    if s.contains(c.items[0]) or get_MIS(c.items[0], MIS) == get_MIS(c.items[1], MIS):
+                    if c.items[0] in s or get_MIS(c.items[0], MIS) == get_MIS(c.items[1], MIS):
                         if prune_candidates(s, F_k):
-                            C_k.pop(c)   
+                            C_k.pop()   
                             break  
     return C_k    
 
