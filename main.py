@@ -150,7 +150,7 @@ def MSApriori(T, MIS, SDC, M):
     for i in range(len(F_k[-1])): # adding the count attribute also for F_1 itemsets. From F_2 on is already done in the loop
         F_k[-1][i].freq_count = round(supports[F_k[-1][i].items[0]] * len(T))
         
-    while (True):
+    while len(F_k[-1]) > 0:
         if k == 2:
             C_k = lvl2_candidate_gen(L, SDC, MIS, supports)
         else:
@@ -165,8 +165,6 @@ def MSApriori(T, MIS, SDC, M):
                     index = find_itemset(temp_set, F_k[-1])
                     F_k[-1][index].tail_count += 1
         F_k.append([c for c in C_k if c.freq_count/len(T) >= get_MIS(c.items[0], MIS)])
-        if not F_k[-1]:
-            break
         k += 1
     F_k.pop()
     return F_k
