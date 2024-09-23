@@ -37,7 +37,7 @@ def write_output(output_file_path, F_k):
             for itemset in list_itemset:
                 itemset_str = " ".join(str(item) for item in itemset.items)
                 output_file.write(f"    ({itemset_str}) : {itemset.freq_count} : {itemset.tail_count}\n")
-                #output_file.write(f"    ({itemset_str}) : {itemset.count}\n")
+
             output_file.write(")\n")
 
     return
@@ -82,7 +82,6 @@ def get_MIS(item, MIS):
 class Itemset():
     def __init__(self, items):
         self.items = items # must be sorted by MIS value
-        self.items_set = set(items)
         self.freq_count = 0
         self.tail_count = 0
         
@@ -95,7 +94,7 @@ class Itemset():
         return Itemset(self.items + [other_item.items[-1]])
     
     def to_set(self):
-        return self.items_set
+        return set(self.items)
 
 def get_subsets(s):
     subsets = list()
@@ -142,7 +141,7 @@ def find_itemset(itemset, F_k):
 
 def MSApriori(T, MIS, SDC, M):
     L, supports = init_pass(M, T) # returns both the L list and the supports for each singular item
-    k = 1
+    k = 2
     F_k = list() 
     F_k.append([Itemset([item]) for item in L if supports[item] >= get_MIS(item, MIS)])
 
@@ -178,10 +177,10 @@ if __name__ == "__main__":
     output_file_path = 'out.txt'
     T, MIS, SDC, M = read_data(data_file_path, parameters_file_path)
 
-    print(T)
+    '''print(T)
     print(MIS)
     print(SDC)
-    print(M)
+    print(M)'''
     F_k = MSApriori(T, MIS, SDC, M)
 
     write_output(output_file_path, F_k)
