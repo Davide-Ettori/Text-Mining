@@ -172,9 +172,9 @@ def contains(a, b):
     return a.issubset(b)
 
 if __name__ == "__main__":
-    data_file_path = 'data.txt'
-    parameters_file_path = 'parameters.txt'
-    output_file_path = 'out.txt'
+    data_file_path = 'data2/inputdata1.txt'
+    parameters_file_path = 'data2/parameters1.txt'
+    output_file_path = 'data2/out1.txt'
     T, MIS, SDC, M = read_data(data_file_path, parameters_file_path)
 
     '''print(T)
