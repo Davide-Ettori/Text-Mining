@@ -6,16 +6,16 @@ def read_data(data_file_path, parameters_file_path):
     with open(parameters_file_path, 'r') as parameters_file:
         parameter_lines = parameters_file.readlines()
         for line in parameter_lines:
-            l = line.strip()
-            if "SDC" in l:
-                SDC = float(l.split(' ')[-1])
-            elif 'rest' in l:
-                MIS["rest"] = float(l.split(' ')[-1])
+            line = line.strip()
+            if "SDC" in line:
+                SDC = float(line.split(' ')[-1])
+            elif 'rest' in line:
+                MIS["rest"] = float(line.split(' ')[-1])
             else:
-                start = l.find('(') + 1
-                end = l.find(')')
-                item = int(l[start:end])
-                MIS[item] = float(l.split(' ')[-1])
+                start = line.find('(') + 1
+                end = line.find(')')
+                item = int(line[start:end])
+                MIS[item] = float(line.split(' ')[-1])
     
     with open(data_file_path, 'r') as data_file:
         data_lines = data_file.readlines()
@@ -87,9 +87,9 @@ class Itemset():
         self.tail_count = 0
         self.items.sort(key=lambda item: (get_MIS(item, MIS), item))
         
-    def can_join(self, other_item, phi, supports): # return True iff the items can be joined
+    def can_join(self, other_item, phi, supports, MIS): # return True iff the items can be joined
         return self.items[:-1] == other_item.items[:-1] and \
-                    self.items[-1] < other_item.items[-1] and \
+                    self.item_less_than(self.items[-1], other_item.items[-1], MIS) and \
                         abs(supports[self.items[-1]] - supports[other_item.items[-1]]) <= phi
     
     def join(self, other_item, MIS): # return a new Itemset that is the join of the two  
@@ -97,6 +97,13 @@ class Itemset():
     
     def to_set(self):
         return set(self.items)
+    
+    def item_less_than(self, item1, item2, MIS):
+        if get_MIS(item1, MIS) < get_MIS(item2, MIS): 
+            return True
+        if get_MIS(item1, MIS) > get_MIS(item2, MIS): 
+            return False
+        return item1 < item2
 
 def get_subsets(s):
     subsets = list()
@@ -124,7 +131,7 @@ def MScandidate_gen(F_k, SDC, MIS, supports):
     C_k = []
     for f1 in F_k:
         for f2 in F_k:
-            if f1.can_join(f2, SDC, supports):
+            if f1.can_join(f2, SDC, supports, MIS):
                 c = f1.join(f2, MIS)
                 C_k.append(c)
                 subsets = get_subsets(c.items)
