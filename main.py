@@ -85,7 +85,7 @@ class Itemset():
         self.items = items # must be sorted by MIS value
         self.freq_count = 0
         self.tail_count = 0
-        self.items.sort(key=lambda item: get_MIS(item, MIS))
+        self.items.sort(key=lambda item: (get_MIS(item, MIS), item))
         
     def can_join(self, other_item, phi, supports): # return True iff the items can be joined
         return self.items[:-1] == other_item.items[:-1] and \
@@ -107,11 +107,11 @@ def get_subsets(s):
 def lvl2_candidate_gen(L, SDC, MIS, supports):
     C2 = list()
 
-    for i, l in enumerate(L):
-        if supports[l] >= get_MIS(l, MIS):
+    for i, line in enumerate(L):
+        if supports[line] >= get_MIS(line, MIS):
             for h in L[i + 1:]:
-                if supports[h] >= get_MIS(l, MIS) and abs(supports[h] - supports[l]) <= SDC:
-                    C2.append(Itemset([l, h], MIS))
+                if supports[h] >= get_MIS(line, MIS) and abs(supports[h] - supports[line]) <= SDC:
+                    C2.append(Itemset([line, h], MIS))
     return C2
 
 def prune_candidates(s, F_k):
@@ -160,18 +160,18 @@ def MSApriori(T, MIS, SDC, M):
         for t in T:
             for c in C_k:
                 temp_set = c.to_set()
-                if contains(temp_set, t):
+                if temp_set <= t: # <= means being a subset
                     c.freq_count += 1
                 temp_set.remove(c.items[0])
-                if contains(temp_set, t):
+                if temp_set <= t:
                     c.tail_count += 1
         F_k.append([c for c in C_k if c.freq_count/len(T) >= get_MIS(c.items[0], MIS)])
         k += 1
     F_k.pop()
     return F_k
 
-def contains(a, b):
-    return a.issubset(b)
+'''def contains(a, b):
+    return a.issubset(b)'''
 
 if __name__ == "__main__":
     data_file_path = 'data-integrated/data-5.txt'
