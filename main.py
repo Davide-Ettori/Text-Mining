@@ -26,7 +26,7 @@ def read_data(data_file_path, parameters_file_path):
                 M.add((item, get_MIS(item, MIS)))
 
     M = list(M)
-    M.sort(key=lambda x: x[1])
+    M.sort(key=lambda x: (x[1], x[0]))
     return T, MIS, SDC, [x[0] for x in M]
 
 def write_output(output_file_path, F_k):
@@ -188,8 +188,8 @@ if __name__ == "__main__":
 
     '''print(T)
     print(MIS)
-    print(SDC)
-    print(M)'''
+    print(SDC)'''
+    print(M)
     F_k = MSApriori(T, MIS, SDC, M)
 
     write_output(output_file_path, F_k)
