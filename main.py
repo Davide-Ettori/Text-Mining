@@ -161,8 +161,7 @@ def MSApriori(T, MIS, SDC, M):
                     c.freq_count += 1
                 temp_set.remove(c.items[0])
                 if contains(temp_set, t):
-                    index = find_itemset(temp_set, F_k[-1])
-                    F_k[-1][index].tail_count += 1
+                    c.tail_count += 1
         F_k.append([c for c in C_k if c.freq_count/len(T) >= get_MIS(c.items[0], MIS)])
         k += 1
     F_k.pop()
@@ -172,9 +171,9 @@ def contains(a, b):
     return a.issubset(b)
 
 if __name__ == "__main__":
-    data_file_path = 'data2/inputdata4.txt'
-    parameters_file_path = 'data2/parameters4.txt'
-    output_file_path = 'data2/out4_nostro.txt'
+    data_file_path = 'data-integrated/data-3.txt'
+    parameters_file_path = 'data-integrated/params-3.txt'
+    output_file_path = 'out-3.txt'
     T, MIS, SDC, M = read_data(data_file_path, parameters_file_path)
 
     '''print(T)
