@@ -80,18 +80,19 @@ def get_MIS(item, MIS):
     return MIS["rest"]
 
 class Itemset():
-    def __init__(self, items):
+    def __init__(self, items, MIS):
         self.items = items # must be sorted by MIS value
         self.freq_count = 0
         self.tail_count = 0
+        self.items.sort(key=lambda item: get_MIS(item, MIS))
         
     def can_join(self, other_item, phi, supports): # return True iff the items can be joined
         return self.items[:-1] == other_item.items[:-1] and \
                     self.items[-1] < other_item.items[-1] and \
                         abs(supports[self.items[-1]] - supports[other_item.items[-1]]) <= phi
     
-    def join(self, other_item): # return a new Itemset that is the join of the two  
-        return Itemset(self.items + [other_item.items[-1]])
+    def join(self, other_item, MIS): # return a new Itemset that is the join of the two  
+        return Itemset(self.items + [other_item.items[-1]], MIS)
     
     def to_set(self):
         return set(self.items)
@@ -109,7 +110,7 @@ def lvl2_candidate_gen(L, SDC, MIS, supports):
         if supports[l] >= get_MIS(l, MIS):
             for h in L[i + 1:]:
                 if supports[h] >= get_MIS(l, MIS) and abs(supports[h] - supports[l]) <= SDC:
-                    C2.append(Itemset([l, h]))
+                    C2.append(Itemset([l, h], MIS))
     return C2
 
 def prune_candidates(s, F_k):
@@ -123,7 +124,7 @@ def MScandidate_gen(F_k, SDC, MIS, supports):
     for f1 in F_k:
         for f2 in F_k:
             if f1.can_join(f2, SDC, supports):
-                c = f1.join(f2)
+                c = f1.join(f2, MIS)
                 C_k.append(c)
                 subsets = get_subsets(c.items)
                 for s in subsets:
@@ -143,7 +144,7 @@ def MSApriori(T, MIS, SDC, M):
     L, supports = init_pass(M, T) # returns both the L list and the supports for each singular item
     k = 2
     F_k = list() 
-    F_k.append([Itemset([item]) for item in L if supports[item] >= get_MIS(item, MIS)])
+    F_k.append([Itemset([item], MIS) for item in L if supports[item] >= get_MIS(item, MIS)])
 
     # check freq vs tail count for F_1 itemsets
     for i in range(len(F_k[-1])): # adding the count attribute also for F_1 itemsets. From F_2 on is already done in the loop
@@ -172,9 +173,9 @@ def contains(a, b):
     return a.issubset(b)
 
 if __name__ == "__main__":
-    data_file_path = 'data-integrated/data-3.txt'
-    parameters_file_path = 'data-integrated/params-3.txt'
-    output_file_path = 'out-3.txt'
+    data_file_path = 'data-integrated/data-5.txt'
+    parameters_file_path = 'data-integrated/params-5.txt'
+    output_file_path = 'out-5.txt'
     T, MIS, SDC, M = read_data(data_file_path, parameters_file_path)
 
     '''print(T)
