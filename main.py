@@ -133,11 +133,11 @@ def MScandidate_gen(F_k, SDC, MIS, supports):
                             break  
     return C_k    
 
-def find_itemset(itemset, F_k):
+'''def find_itemset(itemset, F_k):
     for i, f in enumerate(F_k):
         if f.to_set() == itemset:
             return i
-    return -1
+    return -1'''
 
 def MSApriori(T, MIS, SDC, M):
     L, supports = init_pass(M, T) # returns both the L list and the supports for each singular item
@@ -148,6 +148,7 @@ def MSApriori(T, MIS, SDC, M):
     # check freq vs tail count for F_1 itemsets
     for i in range(len(F_k[-1])): # adding the count attribute also for F_1 itemsets. From F_2 on is already done in the loop
         F_k[-1][i].freq_count = round(supports[F_k[-1][i].items[0]] * len(T))
+        F_k[-1][i].tail_count = len(T)
         
     while len(F_k[-1]) > 0:
         if k == 2:
