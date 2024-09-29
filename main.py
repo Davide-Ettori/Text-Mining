@@ -142,12 +142,6 @@ def MScandidate_gen(F_k, SDC, MIS, supports):
                             break  
     return C_k    
 
-'''def find_itemset(itemset, F_k):
-    for i, f in enumerate(F_k):
-        if f.to_set() == itemset:
-            return i
-    return -1'''
-
 def MSApriori(T, MIS, SDC, M):
     L, supports = init_pass(M, T) # returns both the L list and the supports for each singular item
     k = 2
@@ -177,19 +171,11 @@ def MSApriori(T, MIS, SDC, M):
     F_k.pop()
     return F_k
 
-'''def contains(a, b):
-    return a.issubset(b)'''
-
 if __name__ == "__main__":
-    data_file_path = 'data-integrated/data-5.txt'
-    parameters_file_path = 'data-integrated/params-5.txt'
-    output_file_path = 'out-5.txt'
+    data_file_path = 'data-integrated/data-10.txt'
+    parameters_file_path = 'data-integrated/params-10.txt'
+    output_file_path = 'out.txt'
+
     T, MIS, SDC, M = read_data(data_file_path, parameters_file_path)
-
-    '''print(T)
-    print(MIS)
-    print(SDC)'''
-    print(M)
     F_k = MSApriori(T, MIS, SDC, M)
-
     write_output(output_file_path, F_k)
