@@ -52,7 +52,7 @@ def init_pass(M, T):
             if item in supports:
                 supports[item] += 1
             else:
-                supports[item] = 1
+                supports[item] = 1          
 
     for item in supports:
         supports[item] /= len(T) # convert the count to support (%)
@@ -62,7 +62,7 @@ def init_pass(M, T):
         if supports[item] >= get_MIS(item, MIS):
             first_index = i
             L.append(item)
-            base_support = supports[item] # the support that will be used for inserting the following items in L
+            base_support = get_MIS(item, MIS) # the support that will be used for inserting the following items in L
             break
     
     if first_index == -1: # if no item satisfies the MIS, terminate
@@ -175,7 +175,6 @@ if __name__ == "__main__":
     data_file_path = 'data-integrated/data-10.txt'
     parameters_file_path = 'data-integrated/params-10.txt'
     output_file_path = 'out.txt'
-
     T, MIS, SDC, M = read_data(data_file_path, parameters_file_path)
     F_k = MSApriori(T, MIS, SDC, M)
     write_output(output_file_path, F_k)
