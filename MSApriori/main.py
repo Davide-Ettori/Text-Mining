@@ -3,12 +3,14 @@ def read_data(data_file_path, parameters_file_path):
     MIS = dict()
     M = set()
 
-    with open(parameters_file_path, 'r') as parameters_file:
+    with open(parameters_file_path, 'r', encoding='utf-8-sig') as parameters_file:
         parameter_lines = parameters_file.readlines()
         for line in parameter_lines:
             line = line.strip()
+            #print(line)
             if "SDC" in line:
                 SDC = float(line.split(' ')[-1])
+                break
             elif 'rest' in line:
                 MIS["rest"] = float(line.split(' ')[-1])
             else:
@@ -17,9 +19,11 @@ def read_data(data_file_path, parameters_file_path):
                 item = int(line[start:end])
                 MIS[item] = float(line.split(' ')[-1])
     
-    with open(data_file_path, 'r') as data_file:
+    with open(data_file_path, 'r', encoding='utf-8-sig') as data_file:
         data_lines = data_file.readlines()
         for line in data_lines:
+            if not line.strip():
+                break
             temp = [int(x) for x in line.strip().split(',')]
             T.append(set(temp))
             for item in temp:
@@ -172,9 +176,9 @@ def MSApriori(T, MIS, SDC, M):
     return F_k
 
 if __name__ == "__main__":
-    data_file_path = 'data-integrated/data-10.txt'
-    parameters_file_path = 'data-integrated/params-10.txt'
-    output_file_path = 'out.txt'
+    data_file_path = 'data_prof/data-1/data-1.txt'
+    parameters_file_path = 'data_prof/data-1/para-1-1.txt'
+    output_file_path = 'result-1-1.txt'
     T, MIS, SDC, M = read_data(data_file_path, parameters_file_path)
     F_k = MSApriori(T, MIS, SDC, M)
     write_output(output_file_path, F_k)
