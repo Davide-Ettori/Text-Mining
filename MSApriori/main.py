@@ -7,10 +7,10 @@ def read_data(data_file_path, parameters_file_path):
         parameter_lines = parameters_file.readlines()
         for line in parameter_lines:
             line = line.strip()
-            #print(line)
+            if not line.strip():
+                continue
             if "SDC" in line:
                 SDC = float(line.split(' ')[-1])
-                break
             elif 'rest' in line:
                 MIS["rest"] = float(line.split(' ')[-1])
             else:
@@ -23,17 +23,18 @@ def read_data(data_file_path, parameters_file_path):
         data_lines = data_file.readlines()
         cache = set()
         for line in data_lines:
+
             if not line.strip():
-                break
-            temp = [int(x) for x in line.strip().split(',')]
-            #print(temp)
+                continue
+
+            temp = [int(x) for x in line.strip().split(',') if x]
             T.append(set(temp))
             for item in temp:
                 if item in cache:
                     continue
                 cache.add(item)
                 M.add((item, get_MIS(item, MIS)))
-    print(len(T))
+
     M = list(M)
     M.sort(key=lambda x: (x[1], x[0]))
     return T, MIS, SDC, [x[0] for x in M]
@@ -61,8 +62,7 @@ def init_pass(M, T):
             if item in supports:
                 supports[item] += 1
             else:
-                supports[item] = 1     
-    print(supports[7])     
+                supports[item] = 1        
 
     for item in supports:
         supports[item] /= len(T) # convert the count to support (%)
