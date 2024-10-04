@@ -42,7 +42,6 @@ def read_data(data_file_path, parameters_file_path):
 def write_output(output_file_path, F_k):
     with open(output_file_path, 'w') as output_file:
         for idx, list_itemset in enumerate(F_k, start=1):
-            #list_itemset.sort(key=lambda x: x.freq_count, reverse=True)
             output_file.write(f"(Length-{idx} {len(list_itemset)}\n")
 
             for itemset in list_itemset:
