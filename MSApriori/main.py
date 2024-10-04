@@ -21,14 +21,19 @@ def read_data(data_file_path, parameters_file_path):
     
     with open(data_file_path, 'r', encoding='utf-8-sig') as data_file:
         data_lines = data_file.readlines()
+        cache = set()
         for line in data_lines:
             if not line.strip():
                 break
             temp = [int(x) for x in line.strip().split(',')]
+            #print(temp)
             T.append(set(temp))
             for item in temp:
+                if item in cache:
+                    continue
+                cache.add(item)
                 M.add((item, get_MIS(item, MIS)))
-
+    print(len(T))
     M = list(M)
     M.sort(key=lambda x: (x[1], x[0]))
     return T, MIS, SDC, [x[0] for x in M]
@@ -56,10 +61,12 @@ def init_pass(M, T):
             if item in supports:
                 supports[item] += 1
             else:
-                supports[item] = 1          
+                supports[item] = 1     
+    print(supports[7])     
 
     for item in supports:
         supports[item] /= len(T) # convert the count to support (%)
+
 
     first_index = -1
     for i, item in enumerate(M): # find the first item that satisfies the MIS
@@ -176,9 +183,9 @@ def MSApriori(T, MIS, SDC, M):
     return F_k
 
 if __name__ == "__main__":
-    data_file_path = 'data_prof/data-1/data-1.txt'
-    parameters_file_path = 'data_prof/data-1/para-1-1.txt'
-    output_file_path = 'result-1-1.txt'
+    data_file_path = 'data_prof/data-2/data-2.txt'
+    parameters_file_path = 'data_prof/data-2/para-2-2.txt'
+    output_file_path = 'result-2-2.txt'
     T, MIS, SDC, M = read_data(data_file_path, parameters_file_path)
     F_k = MSApriori(T, MIS, SDC, M)
     write_output(output_file_path, F_k)
