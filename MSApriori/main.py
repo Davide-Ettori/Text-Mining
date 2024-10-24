@@ -184,7 +184,7 @@ def MSApriori(T, MIS, SDC, M):
 if __name__ == "__main__":
     data_file_path = 'data_prof/data-2/data-2.txt'
     parameters_file_path = 'data_prof/data-2/para-2-2.txt'
-    output_file_path = 'result-2-2.txt'
+    output_file_path = 'result-3.txt'
     T, MIS, SDC, M = read_data(data_file_path, parameters_file_path)
     F_k = MSApriori(T, MIS, SDC, M)
     write_output(output_file_path, F_k)
