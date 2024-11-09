@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras import layers, models
 import pickle
 
-word2vec = pickle.load(open('models/twitter.pkl', 'rb'))
+word2vec = pickle.load(open('../models/twitter.pkl', 'rb'))
 
 def get_embedding(word):   
     return word2vec[word] if word in word2vec else np.zeros(word2vec.vector_size)
@@ -16,7 +16,7 @@ def text_to_average_embedding(texts):
         embeddings.append(avg_embedding)
     return np.array(embeddings)
 
-data = pd.read_csv('data_cleaned/train_data_cleaned.csv')
+data = pd.read_csv('../data_cleaned/train_data_cleaned.csv')
 
 initial_count = len(data)
 data = data.dropna()
