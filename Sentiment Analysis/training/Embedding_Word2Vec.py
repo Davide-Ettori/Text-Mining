@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import layers, models
 import pickle
+import matplotlib.pyplot as plt
 
 word2vec = pickle.load(open('../models/twitter.pkl', 'rb'))
 
@@ -50,3 +51,11 @@ history = model.fit(X_train_embeddings, y_train, validation_split=0.2, epochs=25
 
 test_loss, test_accuracy = model.evaluate(X_test_embeddings, y_test)
 print(f'Final Test Accuracy: {test_accuracy:.4f}')
+
+plt.plot(history.history['accuracy'], label='train accuracy')
+plt.plot(history.history['val_accuracy'], label='validation accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.title('Training and Validation Accuracy')
+plt.show()
